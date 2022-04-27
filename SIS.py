@@ -1,6 +1,6 @@
 import csv
 import tkinter as tk
-from tkinter import Button, ttk
+from tkinter import Button, ttk, messagebox
 from tkinter.constants import END
 
 win = tk.Tk()
@@ -229,6 +229,7 @@ student_table.column("Gender", width=25)
 
 student_table.pack(fill=tk.BOTH, expand=True)
 
+
 # Students Data
 with open('data.csv') as csv_file:
     reader = csv.DictReader(csv_file)
@@ -252,35 +253,55 @@ for record in data:
 
     count += 1
 
-# Add Function
-def add_record():
-    global count
-    if count % 2 == 0:
-        student_table.insert(parent="", index="end", iid=count, text="", values=(
-            id_ent.get(),
-            name_ent.get(),
-            course_ent.get(),
-            year_ent.get(),
-            gen_ent.get(),
-        ),
-                             )
+# Add Student
+def add_student():
+    if name_ent.get() == "" or id_ent.get() == "" or year_ent == "" or course_ent.get() == "" \
+            or gen_ent.get() == "":
+        messagebox.showerror("Error", "Please fill out all fields")
+        return
+    msg = messagebox.askquestion('Add Student', 'Are you sure you want to add the student?')
+    if msg == 'yes':
+        global count
+        if count % 2 == 0:
+            student_table.insert(parent="", index="end", iid=count, text="", values=(
+                id_ent.get(),
+                name_ent.get(),
+                course_ent.get(),
+                year_ent.get(),
+                gen_ent.get(),
+         ),
+                                )
+        else:
+            student_table.insert(parent="", index="end", iid=count, text="", values=(
+                id_ent.get(),
+                name_ent.get(),
+                course_ent.get(),
+                year_ent.get(),
+                gen_ent.get(),
+            )
+                                 )
+
+        count += 1
+        delete_all()
+        return
     else:
-        student_table.insert(parent="", index="end", iid=count, text="", values=(
-            id_ent.get(),
-            name_ent.get(),
-            course_ent.get(),
-            year_ent.get(),
-            gen_ent.get(),
-        ),
-                             )
-    count += 1
+        return
 
-# Delete One Function
+# Delete Student
 def delete_one():
-    x = student_table.selection()[0]
-    student_table.delete(x)
+    if not student_table.selection():
+        messagebox.showerror("Error", "Select a student first")
+        return
+    else:
+        msg = messagebox.askquestion('Delete Student', 'Are you sure you want to delete the student?')
+        if msg == 'yes':
+            x = student_table.selection()
+            student_table.delete(x)
+            return
+        else:
+            return
 
-# Edit Function
+# Edit Student
 def edit_record():
     id_ent.delete(0, END)
     name_ent.delete(0, END)
@@ -297,19 +318,23 @@ def edit_record():
     year_ent.insert(0, values[3])
     gen_ent.insert(0, values[4])
 
-# Update Function
+# Update Student
 def update_record():
-    selected = student_table.focus()
-    student_table.item(selected, text="",
-                       values=(id_ent.get(), name_ent.get(), course_ent.get(), year_ent.get(), gen_ent.get()))
+    if name_ent.get() == "" or id_ent.get() == "" or year_ent == "" or course_ent.get() == "" \
+            or gen_ent.get() == "":
+        messagebox.showerror("Error", "Please fill out all fields")
+        return
+    msg = messagebox.askquestion('Update Student', "Are you sure you want to update the student's information?")
+    if msg == 'yes':
+        selected = student_table.focus()
+        student_table.item(selected, text="",
+                        values=(id_ent.get(), name_ent.get(), course_ent.get(), year_ent.get(), gen_ent.get()))
+        delete_all()
+        return
+    else:
+        return
 
-    id_ent.update(0, END)
-    name_ent.update(0, END)
-    course_ent.update(0, END)
-    year_ent.update(0, END)
-    gen_ent.update(0, END)
-
-# Clear Function
+# Clear Student Records
 def delete_all():
     id_ent.delete(0, END)
     name_ent.delete(0, END)
@@ -342,7 +367,7 @@ add_btn = tk.Button(
     text="ADD",
     bd=1,
     font=("Hops And Barley c3 Bold", 15), width=12,
-    command=add_record
+    command=add_student
 )
 add_btn.grid(row=1, column=0, padx=20, pady=15)
 
